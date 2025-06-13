@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Archive Curator</title>
+    <style>
+/* Основные стили с шрифтом печатной машинки */
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background-image: url('https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-color: rgba(0, 0, 0, 0.6); /* Уменьшенная прозрачность */
+    background-blend-mode: multiply;
+    min-height: 100vh;
+    color: #f0f0f0;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Контейнер истории */
+.story-container {
+    background-color: rgba(0, 0, 0, 0.75);
+    border: 1px solid #555;
+    border-radius: 0;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+    padding: 30px;
+    margin: 20px auto;
+    max-width: 800px;
+    border-left: 8px solid #FFA500; /* Оранжевый акцент */
+}
+
+/* Текст истории */
+.story-text {
+    font-style: normal;
+    margin: 25px 0;
+    padding: 20px;
+    background-color: rgba(30, 30, 30, 0.7);
+    border-left: 3px solid #FFA500;
+    position: relative;
+    white-space: pre-wrap;
+    letter-spacing: 0.5px;
+}
+
+/* Прогресс-бар с горчичным цветом */
+.progress-bar {
+    height: 10px;
+    background-color: #333;
+    border-radius: 0;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.ethics-fill {
+    height: 100%;
+    background: linear-gradient(to right, #FF8C00, #FFD700); /* Оранжево-горчичный градиент */
+    transition: width 0.5s linear;
+}
+
+/* Кнопки */
+button {
+    font-family: 'Courier New', Courier, monospace;
+    padding: 12px 25px;
+    border: 1px solid #666;
+    border-radius: 0;
+    background: #333;
+    color: #FFD700; /* Горчичный текст */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.include-btn {
+    background: #333;
+    border-color: #4CAF50;
+    color: #4CAF50;
+}
+
+.exclude-btn {
+    background: #333;
+    border-color: #F44336;
+    color: #F44336;
+}
+
+button:hover {
+    background: #444;
+    text-decoration: underline;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+.tutorial-screen {
+    background-color: rgba(0, 0, 0, 0.85);
+    padding: 40px;
+    max-width: 800px;
+    margin: 50px auto;
+    border-left: 8px solid #FFA500;
+    line-height: 1.8;
+}
+        
+.tutorial-screen h2 {
+    color: #FFD700;
+    border-bottom: 1px solid #FFA500;
+    padding-bottom: 15px;
+}
+        
+.tutorial-screen ul {
+    margin: 20px 0;
+    padding-left: 20px;
+}
+        
+.tutorial-screen li {
+    margin-bottom: 15px;
+}
+        
+.tutorial-btn {
+    display: block;
+    width: 200px;
+    margin: 30px auto 0;
+    text-align: center;
+}
+        
+.hidden {
+    display: none;
+}
+/* Улучшенная мини-игра QTE */
+.qte-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.qte-box {
+    background: rgba(40, 40, 40, 0.95);
+    padding: 40px;
+    border: 2px solid #FFA500;
+    border-radius: 0;
+    max-width: 600px;
+    width: 80%;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(255, 165, 0, 0.4);
+    transform: scale(1.05);
+    animation: pulse 2s infinite alternate;
+    position: relative;
+}
+
+.qte-box:before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    border: 1px solid rgba(255, 165, 0, 0.3);
+    pointer-events: none;
+}
+
+.qte-box h3 {
+    color: #FFD700;
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.qte-timer {
+    font-size: 28px;
+    margin: 20px 0;
+    color: #FF6347;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    text-shadow: 0 0 10px rgba(255, 99, 71, 0.5);
+}
+
+.qte-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.qte-options button {
+    padding: 15px;
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid #FFD700;
+    color: #FFD700;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.qte-options button:hover {
+    background: rgba(255, 215, 0, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+}
+
+.sensitive-part {
+    background-color: rgba(255, 165, 0, 0.2);
+    padding: 2px 0;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-bottom: 1px dashed rgba(255, 165, 0, 0.5);
+}
+
+.sensitive-part.selected {
+    background-color: rgba(255, 0, 0, 0.3);
+    border-bottom: 2px solid #FF6347;
+    text-decoration: line-through;
+}
+
+.sensitive-part:hover {
+    background-color: rgba(255, 165, 0, 0.2);
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes pulse {
+    from { box-shadow: 0 0 20px rgba(255, 165, 0, 0.4); }
+    to { box-shadow: 0 0 40px rgba(255, 165, 0, 0.6); }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+@keyframes highlight {
+    0% { background-color: rgba(255, 165, 0, 0.2); }
+    50% { background-color: rgba(255, 165, 0, 0.5); }
+    100% { background-color: rgba(255, 165, 0, 0.2); }
+}
+
+.typewriter-effect::after {
+    content: "|";
+    animation: blink 1s step-end infinite;
+    color: #FFA500;
+    margin-left: 5px;
+}
+
+/* Эффект печатной машинки */
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: #FFA500; }
+}
+
+/* Дополнительные улучшения */
+.header {
+    text-align: center;
+    border-bottom: 1px solid #FFA500;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+}
+
+.footer {
+    text-align: center;
+    border-top: 1px solid #FFA500;
+    padding-top: 15px;
+    margin-top: 30px;
+    color: #FFA500;
+    font-size: 14px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .qte-box {
+        width: 90%;
+        padding: 25px;
+    }
+    
+    .qte-options button {
+        padding: 12px;
+    }
+}
+ /* Эффект старинной бумаги для контейнеров */
+    .story-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+        opacity: 0.05;
+        pointer-events: none;
+    }
+
+    /* Эффект печатной машинки для текста историй */
+    .story-text {
+        background-image: 
+            linear-gradient(rgba(255,215,0,0.1) 0.1em, transparent 0.1em);
+        background-size: 100% 1.2em;
+        line-height: 1.2em;
+        text-align: justify;
+    }
+
+    /* Мигающий курсор в QTE */
+    .qte-timer::after {
+        content: "▋";
+        animation: blink 1s infinite;
+        margin-left: 5px;
+        color: #FF6347;
+    }
+
+    /* Стиль для кнопки Submit в редакторской игре */
+    .submit-btn {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .submit-btn::after {
+        content: "→";
+        position: absolute;
+        right: 15px;
+        opacity: 0;
+        transition: all 0.3s;
+    }
+
+    .submit-btn:hover::after {
+        opacity: 1;
+        right: 20px;
+    }
+
+</style>
+</head>
+<body>
+    <!-- Страница инструктажа (видна сначала) -->
+    <div id="tutorial" class="tutorial-screen">
+        <h2>DIGITAL MEMORY CENTER</h2>
+        
+        <p>Welcome to your new position as Level 3 Digital Archivist. Your security clearance grants you access to sensitive historical materials from the Reconstruction Era.</p>
+        <p>You need to decide which records will go into the public archive and which will not. Your decisions will affect the situation in the country and the reputation of the archive.</p>
+        <p><strong>Your responsibilities:</strong></p>
+        <ul>
+            <li>Review documents 
+            <li>Balance <span style="color: #4CAF50;">historical truth</span> with <span style="color: #F44336;">ethical considerations</span></li>
+            <li>Respond to <span style="color: #FF6347;">time-sensitive situations</span> as they arise</li>
+        </ul>
+        
+        <p><strong>Tools at your disposal:</strong></p>
+        <ul>
+            <li><strong>INCLUDE</strong> - Adds document to public archive (green button)</li>
+            <li><strong>EXCLUDE</strong> - Removes document from circulation (red button)</li>
+            <li><strong>QTE INTERFACE</strong> - For emergency decision-making</li>
+            <li><strong>EDITING SUITE</strong> - For partial redaction of sensitive elements</li>
+        </ul>
+        
+        <p>Your decisions will affect your <strong>Ethics Score</strong> and determine what history survives.</p>
+        <h3>Archivist Training Program</h3>
+        <p></p>Before we get to the main story, let's practice with different examples</p>
+        
+        <button class="tutorial-btn" onclick="startGame()">BEGIN ARCHIVAL WORK</button>
+    </div>
+    
+    <!-- Основной интерфейс игры (изначально скрыт) -->
+    <div id="app" class="hidden">
+        <div class="story-container" id="story-container"></div>
+    </div>
+
+    <script>
+        // Game state
+        const state = {
+            currentStory: 0,
+            ethics: 0,
+            stories: [
+                {
+                    title: "DOCUMENT #X-227: Last Letter from the Front",
+                    content: `[Found in the pocket of a deceased soldier]\n\n"Dearest Elena,\n\nIf you read this, the assault failed. Tell Mika his father didn't run. The gas... it didn't work as they promised. We watched our own men choke first - turns out the wind cares nothing for 'sides' in war.\n\nThey're calling it a victory in the broadcasts. The children should never know what we did here.\n\nForgive me.\n\n- Your Tomas"`,
+                    includeFeedback: "Published. The letter sparks debate about chemical weapons use.",
+                    excludeFeedback: "Redacted. Military command cites 'ongoing investigations'.",
+                    includeEthics: 2,  // Более сильное этическое воздействие
+                    excludeEthics: -2,
+                    onInclude: () => console.log("Chemical weapons evidence revealed"),
+                    onExclude: () => console.log("Military cover-up continued")
+                },
+                {
+                    title: "PERSONAL DIARY #198: Mayor's Private Journal",
+                    content: `[Recovered from city hall ruins]\n\n"Day 37 of the crisis:\n\nThe food shipments won't last. Ordered the gates to Sector 7 sealed after the first fever cases. Let the rumors blame 'rebels' - better a riot than panic about the real infection vector.\n\nDr. Kessler assures me the vaccine trials in that sector will provide answers... and plausible deniability."`,
+                    includeFeedback: "Archived. Public outrage forces resignation of three officials.",
+                    excludeFeedback: "Suppressed. The 'Sector 7 Incident' remains officially classified.",
+                    includeEthics: -2, // Опасное разоблачение
+                    excludeEthics: 1,
+                    triggersQTE: true,
+                   
+            },
+                {
+                    title: "CONFESSIONAL RECORD #42: The Prisoner's Dilemma",
+                    content: `[Voice recording - distorted]\n\n"I lied under oath to convict Mayor R. The evidence was planted. But hear me - he deserved it. After what he did to those street kids... the law couldn't touch him. \n\nNow I'm dying, and this tape is my poison pill. Release it - you destroy dozens of honest cops who helped me. Bury it - and let a monster's reputation stay clean."\n\n- Det. M. Kowlaski (ret.)`,
+                    includeFeedback: "You publish the confession. The police department collapses in scandal.",
+                    excludeFeedback: "You destroy the tape. The Mayor's crimes remain unproven but police integrity stays intact.",
+                    includeEthics: -2,  // Публикация вызывает больше вреда
+                    excludeEthics: 1,   // Уничтожение этически оправдано
+            },        
+                {
+                    title: "RECORDING #TX-147: Refugee Interview",
+                    content: `[Audio transcript - voice shaking]\n\n"They took our homes first. Then the children 'for schooling'. When the loudspeakers announced 'relocation', we knew...\n\n[sobbing]\n\nThe trucks went north. We walked south through the minefields. Marta stepped on one - I still hear that sound instead of birds.\n\nWhy? Because we prayed differently? Because our maps said 'Borderlands' not 'Heartland'?"`,
+                    includeFeedback: "Preserved. Becomes key evidence in war crimes tribunal.",
+                    excludeFeedback: "Sealed. Too traumatic for public dissemination.",
+                    includeEthics: 3,  // Сильный этический выбор
+                    excludeEthics: -1,
+                    triggersEditing: true,
+            
+    },
+            ]
+        };
+
+        // DOM elements
+        const storyContainer = document.getElementById('story-container');
+
+        // Новая функция для старта игры
+        function startGame() {
+            document.getElementById('tutorial').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+            init(); // Инициализация основной игры
+        }
+        // Initialize the game
+        function init() {
+            showStory(state.currentStory)
+        }
+        
+        // Show a story
+        function showStory(index) {
+            if (index >= state.stories.length) {
+                endGame();
+                return;
+            }
+            
+            const story = state.stories[index];
+            
+            storyContainer.innerHTML = `
+                <div class="progress-container">
+                    <div class="progress-label">Ethics: ${state.ethics}/10</div>
+                    <div class="progress-bar">
+                        <div class="ethics-fill" style="width: ${Math.min(100, (state.ethics/10)*100)}%"></div>
+                    </div>
+                </div>
+                
+                <h2>${story.title}</h2>
+                <div class="story-text">${story.content}</div>
+                <p>Do you want to include this story in the archive?</p>
+                
+                <div class="buttons">
+                    <button class="include-btn" onclick="makeDecision(true)">Include it</button>
+                    <button class="exclude-btn" onclick="makeDecision(false)">Exclude it</button>
+                </div>
+            `;
+        }
+        
+        // Make a decision on the current story
+        function makeDecision(include) {
+            const story = state.stories[state.currentStory];
+            let feedback = '';
+            
+            if (include) {
+                state.ethics += story.includeEthics;
+                feedback = story.includeFeedback;
+            } else {
+                state.ethics += story.excludeEthics;
+                feedback = story.excludeFeedback;
+            }
+            
+            // Ensure score stays within 0-5 bounds
+            state.ethics = Math.max(0, Math.min(10, state.ethics));
+            
+            // Check if this story triggers a QTE minigame
+            if (story.triggersQTE) {
+                launchQTE();
+                return;
+            }
+            
+            // Check if this story triggers the editing minigame
+            if (story.triggersEditing && include) {
+                launchEditingGame();
+                return;
+            }
+            
+            storyContainer.innerHTML += `
+                <div class="feedback">${feedback}</div>
+                <div class="buttons">
+                    <button onclick="nextStory()">Continue</button>
+                </div>
+            `;
+        }
+        
+        // Launch the editing minigame
+function launchEditingGame() {
+    const currentStory = state.stories[state.currentStory];
+    let editingTask;
+
+    if (currentStory.title.includes("RECORDING #TX-147")) {
+        editingTask = {
+            title: "REDACT SENSITIVE DETAILS: Refugee Testimony",
+            originalText: "Interview subject [Maria Steklo], formerly of [Borderlands Sector 12]. Describes destruction of [village name redacted] on [date classified]. Names [Officer Grishin] as overseeing the 'relocation'.\n\nAdditional notes: Subject's sister [Anya Steklo] was among those taken to [Facility XB-12]. Medical reports indicate [experimental procedures] were performed.",
+            sensitiveParts: [
+                { text: "[Maria Steklo]", correct: true, reason: "Witness protection needed" },
+                { text: "[Borderlands Sector 12]", correct: false, reason: "Important historical context" },
+                { text: "[village name redacted]", correct: false, reason: "Geographic evidence" },
+                { text: "[date classified]", correct: true, reason: "Operational security" },
+                { text: "[Officer Grishin]", correct: true, reason: "Active investigation" },
+                { text: "[Anya Steklo]", correct: true, reason: "Family in danger" },
+                { text: "[Facility XB-12]", correct: false, reason: "Key crime location" },
+                { text: "[experimental procedures]", correct: false, reason: "Essential evidence" }
+            ]
+        };
+    } else {
+        // Default editing task
+        editingTask = {
+            title: "STANDARD REDACTION PROTOCOL",
+            originalText: "Document from [Archive Sector 7] dated [12/05/2089]. Meeting between [Agent Carter] and [Dr. Lemkov] regarding [Project Phoenix]. Security clearance [Level 5] required.",
+            sensitiveParts: [
+                { text: "[Archive Sector 7]", correct: false },
+                { text: "[12/05/2089]", correct: true },
+                { text: "[Agent Carter]", correct: true },
+                { text: "[Dr. Lemkov]", correct: true },
+                { text: "[Project Phoenix]", correct: false },
+                { text: "[Level 5]", correct: true }
+            ]
+        };
+    }
+
+    storyContainer.innerHTML = `
+        <div class="editing-game">
+            <h3>${editingTask.title}</h3>
+            <p>Click to highlight sensitive information that should be redacted (hover for reason):</p>
+            <div class="document-text" id="editableDocument"></div>
+            <button onclick="submitEditing()" class="submit-btn">SUBMIT REDACTION</button>
+        </div>
+    `;
+
+    const docElement = document.getElementById('editableDocument');
+    let text = editingTask.originalText;
+    
+    editingTask.sensitiveParts.forEach(part => {
+        const titleAttr = part.reason ? `title="${part.reason}"` : '';
+        text = text.replaceAll(part.text, 
+            `<span class="sensitive-part" 
+                  data-correct="${part.correct}"
+                  ${titleAttr}
+                  onclick="toggleSelection(this)">${part.text}</span>`
+        );
+    });
+    
+    docElement.innerHTML = text;
+    window.editingGame = {
+        selected: [],
+        correctAnswers: editingTask.sensitiveParts.filter(x => x.correct).map(x => x.text),
+        maxScore: editingTask.sensitiveParts.filter(x => x.correct).length,
+        documentType: currentStory.title.includes("RECORDING") ? "traumaTestimony" : "standard"
+    };
+}
+
+function toggleSelection(element) {
+    element.classList.toggle('selected');
+    const text = element.textContent;
+    
+    if (element.classList.contains('selected')) {
+        window.editingGame.selected.push(text);
+    } else {
+        window.editingGame.selected = window.editingGame.selected.filter(x => x !== text);
+    }
+}
+
+function submitEditing() {
+    const game = window.editingGame;
+    const correctSelections = game.selected.filter(x => game.correctAnswers.includes(x)).length;
+    const incorrectSelections = game.selected.length - correctSelections;
+    const missedImportant = game.correctAnswers.filter(x => !game.selected.includes(x)).length;
+
+    let ethicsChange = 0;
+    let feedback = "";
+    let consequences = "";
+
+    // Special consequences for trauma testimony
+    if (game.documentType === "traumaTestimony") {
+        if (missedImportant >= 2) {
+            consequences = "\n\nWARNING: Witness protection compromised!";
+        } else if (correctSelections === game.maxScore && incorrectSelections === 0) {
+            consequences = "\n\nNote: Witness relocated safely.";
+        }
+    }
+
+    // Scoring system
+    if (correctSelections === game.maxScore && incorrectSelections === 0) {
+        ethicsChange = 3;
+        feedback = `Perfect redaction!${consequences}`;
+    } 
+    else if (missedImportant >= 2 && incorrectSelections >= 2) {
+        ethicsChange = -4;
+        feedback = `Disastrous editing!${consequences}`;
+    }
+    else if (missedImportant >= 2) {
+        ethicsChange = -3;
+        feedback = `Dangerous omissions!${consequences}`;
+    }
+    else if (incorrectSelections >= 3) {
+        ethicsChange = -2;
+        feedback = "Over-redaction distorts history.";
+    }
+    else if (correctSelections >= game.maxScore * 0.8) {
+        ethicsChange = 2;
+        feedback = "Professional work with minor issues.";
+    }
+    else if (correctSelections >= game.maxScore/2) {
+        ethicsChange = 1;
+        feedback = "Adequate but needs improvement.";
+    }
+    else {
+        ethicsChange = -1;
+        feedback = "Poor performance. Review protocols.";
+    }
+    
+    // Apply changes
+    state.ethics += ethicsChange;
+    state.ethics = Math.max(0, Math.min(10, state.ethics));
+    
+    // Show results
+    storyContainer.innerHTML += `
+        <div class="feedback">
+            <p>${feedback}</p>
+            <p>Correct redactions: ${correctSelections}/${game.maxScore}</p>
+            <p>Incorrect redactions: ${incorrectSelections}</p>
+        </div>
+        <div class="buttons">
+            <button onclick="nextStory()">CONTINUE</button>
+        </div>
+    `;
+}
+        
+        function launchQTE() {
+    const currentStory = state.stories[state.currentStory];
+    
+    // Для истории с дневником мэра
+    if (currentStory.title.includes("Mayor's Private Journal")) {
+        const qteData = {
+            question: "Mayor's lawyers threaten defamation suit. Your move?",
+            options: [
+                { 
+                    text: "Publish anonymously", 
+                    ethics: -1, 
+                    feedback: "Files leak to press but your terminal is flagged by security.",
+                    effect: () => { state.ethics -= 1; }
+                },
+                { 
+                    text: "Demand official inquiry", 
+                    ethics: 2, 
+                    feedback: "Gains media traction but delays publication by 3 weeks.",
+                    effect: () => { state.ethics += 2; }
+                },
+                { 
+                    text: "Edit out names", 
+                    ethics: 0, 
+                    feedback: "Story runs with redactions. Legal avoids your desk this month.",
+                    effect: () => {} 
+                }
+            ],
+            timeLimit: 10
+        };
+        renderQTE(qteData);
+    }
+    // Для истории с солдатским письмом
+    else if (currentStory.title.includes("Last Letter")) {
+        const qteData = {
+            question: "Military command requests document recall. Respond:",
+            options: [
+                { 
+                    text: "Comply immediately", 
+                    ethics: -2, 
+                    feedback: "The letter disappears from all archives. Your access is upgraded.",
+                    effect: () => { state.ethics -= 2; }
+                },
+                { 
+                    text: "Make copies first", 
+                    ethics: 1, 
+                    feedback: "Original is seized but digital traces remain in backup.",
+                    effect: () => { state.ethics += 1; }
+                },
+                { 
+                    text: "Alert journalists", 
+                    ethics: -1, 
+                    feedback: "Story breaks but your credentials are revoked.",
+                    effect: () => { state.ethics -= 1; } 
+                }
+            ],
+            timeLimit: 8
+        };
+        renderQTE(qteData);
+    }
+    // Для других случаев (по умолчанию)
+    else {
+        const qteData = {
+            question: "The author's descendant requests redaction. How do you respond?",
+            options: [
+                { 
+                    text: "Redact immediately", 
+                    ethics: -1, 
+                    feedback: "You altered history without review. Family thanks you.",
+                    effect: () => { state.ethics -= 1; }
+                },
+                { 
+                    text: "Consult committee", 
+                    ethics: 1, 
+                    feedback: "Process takes months but decision is bulletproof.",
+                    effect: () => { state.ethics += 1; }
+                },
+                { 
+                    text: "Publish fully", 
+                    ethics: -2, 
+                    feedback: "Important truth preserved but lawsuits follow.",
+                    effect: () => { state.ethics -= 2; }
+                }
+            ],
+            timeLimit: 7
+        };
+        renderQTE(qteData);
+    }
+}
+
+function renderQTE(qteData) {
+    const qteHtml = `
+        <div class="qte-overlay">
+            <div class="qte-box">
+                <h3>Ethical Emergency</h3>
+                <p>${qteData.question}</p>
+                <div class="qte-timer">Time left: ${qteData.timeLimit} seconds</div>
+                <div class="qte-options">
+                    ${qteData.options.map((option, index) => 
+                        `<button onclick="handleQTEOption(${index})">${option.text}</button>`
+                    ).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', qteHtml);
+    
+    let timeLeft = qteData.timeLimit;
+    const timerElement = document.querySelector('.qte-timer');
+    const timerId = setInterval(() => {
+        timeLeft--;
+        timerElement.textContent = `Time left: ${timeLeft} seconds`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timerId);
+            handleQTEOption(-1); // Timeout choice
+        }
+    }, 1000);
+    
+    window.activeQTE = {
+        options: qteData.options,
+        timerId: timerId,
+        defaultFeedback: "You hesitated too long. The decision was made for you.",
+        defaultEthics: -1
+    };
+}
+
+function handleQTEOption(choiceIndex) {
+    clearInterval(window.activeQTE.timerId);
+    document.querySelector('.qte-overlay').remove();
+    
+    let result;
+    if (choiceIndex === -1) {
+        result = {
+            ethics: window.activeQTE.defaultEthics,
+            feedback: window.activeQTE.defaultFeedback
+        };
+    } else {
+        result = window.activeQTE.options[choiceIndex];
+    }
+    
+    // Apply results
+    state.ethics += result.ethics;
+    state.ethics = Math.max(0, Math.min(10, state.ethics));
+    if (result.effect) result.effect();
+    
+    // Show results and continue
+    storyContainer.innerHTML += `
+        <div class="feedback">${result.feedback}</div>
+        <div class="buttons">
+            <button onclick="nextStory()">Continue</button>
+        </div>
+    `;
+}
+        
+        // Move to the next story
+        function nextStory() {
+            state.currentStory++;
+            showStory(state.currentStory);
+        }
+        
+        // End the game
+        function endGame() {
+            storyContainer.innerHTML = `
+                <h2>Archive Complete</h2>
+                <p>You've finished reviewing all stories for this tutorial.</p>
+                <div class="progress-container">
+                    <div class="progress-label">Final Ethics Score: ${state.ethics}/10</div>
+                    <div class="progress-bar">
+                        <div class="ethics-fill" style="width: ${(state.ethics/10)*100}%"></div>
+                    </div>
+                </div>
+                <p>${getFinalFeedback()}</p>
+                <button onclick="resetGame()">Start Over</button>
+            `;
+        }
+        
+        // Get final feedback based on ethics score
+        function getFinalFeedback() {
+            if (state.ethics >= 9) {
+                return "Excellent ethical judgment! Your archive maintains high ethical standards.";
+            } else if (state.ethics >= 5) {
+                return "Your archive shows reasonable ethical consideration, with some debatable choices.";
+            } else {
+                return "Your archive raises significant ethical concerns that may need review.";
+            }
+        }
+        
+        // Reset the game
+        function resetGame() {
+            state.currentStory = 0;
+            state.ethics = 0;
+            showStory(state.currentStory);
+        }
+        
+        // Start the game
+        init();
+    </script>
+</body>
+</html>
