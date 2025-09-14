@@ -344,36 +344,88 @@ button:hover {
 </style>
 </head>
 <body>
-    <!-- Страница инструктажа (видна сначала) -->
-    <div id="tutorial" class="tutorial-screen">
+    <!-- Первая страница (завлекающая) -->
+    <div id="welcome-screen" class="tutorial-screen">
         <h2>DIGITAL MEMORY CENTER</h2>
-        
-        <p>Welcome to your new position as Level 3 Digital Archivist. Your security clearance grants you access to sensitive historical materials from the Reconstruction Era.</p>
-        <p>You need to decide which records will go into the public archive and which will not. Your decisions will affect the situation in the country and the reputation of the archive.</p>
-        <p><strong>Your responsibilities:</strong></p>
-        <ul>
-            <li>Review documents 
-            <li>Balance <span style="color: #4CAF50;">historical truth</span> with <span style="color: #F44336;">ethical considerations</span></li>
-            <li>Respond to <span style="color: #FF6347;">time-sensitive situations</span> as they arise</li>
-        </ul>
-        
-        <p><strong>Tools at your disposal:</strong></p>
-        <ul>
-            <li><strong>INCLUDE</strong> - Adds document to public archive (green button)</li>
-            <li><strong>EXCLUDE</strong> - Removes document from circulation (red button)</li>
-            <li><strong>QTE INTERFACE</strong> - For emergency decision-making</li>
-            <li><strong>EDITING SUITE</strong> - For partial redaction of sensitive elements</li>
-        </ul>
-        
-        <p>Your decisions will affect your <strong>Ethics Score</strong> and determine what history survives.</p>
-        <h3>Archivist Training Program</h3>
-        <p></p>Before we get to the main story, let's practice with different examples</p>
-        
-        <button class="tutorial-btn" onclick="startGame()">BEGIN ARCHIVAL WORK</button>
+        <p><strong>Clearance Level 3 Required</strong></p>
+        <div class="story-text">
+            History is not just what happened. It's what survives.
+            <br><br>
+            You have been granted access to the most sensitive archives of the Reconstruction Era. The decisions you make here will shape the public's understanding of our past... and its future.
+            <br><br>
+            The truth is fragile. Handle with care.
+        </div>
+        <button class="tutorial-btn" onclick="showTutorial()">ACCEPT COMMISSION</button>
     </div>
+
+<!-- Вторая страница (подробная инструкция) -->
+<div id="tutorial" class="tutorial-screen hidden">
+    <h2>ARCHIVIST BRIEFING</h2>
     
+    <p>Welcome to your new position as <strong>Level 3 Digital Archivist</strong>. Your security clearance grants you access to sensitive historical materials from the Reconstruction Era.</p>
+    
+    <div class="story-text">
+        <strong>Your Mission:</strong> You will review classified documents and decide what becomes public knowledge. Each choice shapes the official historical record and affects national stability.
+    </div>
+
+    <p><strong> Your Responsibilities:</strong></p>
+    <ul>
+        <li><strong>Review</strong> each document carefully</li>
+        <li><strong>Balance</strong> <span style="color: #4CAF50;">historical truth</span> with <span style="color: #F44336;">ethical considerations</span></li>
+        <li><strong>Respond</strong> to <span style="color: #FF6347;">time-sensitive emergencies</span> as they arise</li>
+    </ul>
+    
+    <p><strong> Tools at Your Disposal:</strong></p>
+    <ul>
+        <li><strong style="color: #4CAF50;">INCLUDE (Green Button)</strong> - Publishes the document in the public archive. Increases historical transparency.</li>
+        <li><strong style="color: #F44336;">EXCLUDE (Red Button)</strong> - Permanently removes the document from circulation. Protects sensitive information.</li>
+        <li><strong style="color: #FFD700;">EDITING SUITE</strong> - Allows partial redaction of sensitive information. Click on highlighted text to redact it before publishing.</li>
+        <li><strong style="color: #FF6347;">QTE INTERFACE</strong> - Quick Time Event system for emergency decisions.</li>
+    </ul>
+
+    <div class="story-text" style="background-color: rgba(255, 165, 0, 0.1);">
+        <strong>⚠️ QTE (Quick Time Event) Explained:</strong><br><br>
+        Some documents will trigger <strong>ethical emergencies</strong> where you must make quick decisions under pressure.<br><br>
+        • A pop-up window will appear with a timer<br>
+        • You will have <strong>5-10 seconds</strong> to choose a response<br>
+        • <span style="color: #FF6347;">If time runs out, the system will decide for you</span><br>
+        • These decisions often have significant consequences<br><br>
+    </div>
+
+    <p><strong> Ethics Score System:</strong></p>
+    <ul>
+        <li>Each decision affects your <strong>Ethics Score</strong> (0-10)</li>
+        <li>Different choices have different ethical values</li>
+        <li>There are no "right" answers — only trade-offs</li>
+        <li>Your final score determines what kind of archivist you became</li>
+    </ul>
+
+    <div class="story-text" style="background-color: rgba(0, 100, 255, 0.1);">
+        <strong>💡 Pro Tips:</strong><br><br>
+        • Read each document carefully — details matter<br>
+        • Consider both immediate and long-term consequences<br>
+        • Use the EDITING SUITE when you want to publish but need to protect specific information<br>
+        • Stay alert for QTE emergencies — they can happen anytime<br>
+        • Remember: you can always click HELP to review these instructions
+    </div>
+
+    <h3>Archivist Training Program</h3>
+    <p>You will now review 4 training documents to practice using all the tools. Ready to begin?</p>
+    
+    <div style="display: flex; justify-content: center; gap: 20px; margin-top: 30px;">
+        <button class="tutorial-btn" onclick="document.getElementById('welcome-screen').classList.remove('hidden'); document.getElementById('tutorial').classList.add('hidden');" style="background-color: #555;">
+            ← BACK
+        </button>
+        <button class="tutorial-btn" onclick="startGame()">
+            BEGIN TRAINING →
+        </button>
+    </div>
+</div>
     <!-- Основной интерфейс игры (изначально скрыт) -->
     <div id="app" class="hidden">
+        <div style="text-align: right; margin-bottom: 10px;">
+            <button onclick="showTutorial()" style="font-size: 12px; padding: 5px 10px;">HELP</button>
+        </div>
         <div class="story-container" id="story-container"></div>
     </div>
 
@@ -427,12 +479,23 @@ button:hover {
         // DOM elements
         const storyContainer = document.getElementById('story-container');
 
+        // Новая функция для показа инструкции
+        function showTutorial() {
+            // Скрываем все основные экраны
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('app').classList.add('hidden');
+            // Показываем экран с инструкцией
+            document.getElementById('tutorial').classList.remove('hidden');
+        }
+
         // Новая функция для старта игры
         function startGame() {
+            document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('tutorial').classList.add('hidden');
             document.getElementById('app').classList.remove('hidden');
             init(); // Инициализация основной игры
         }
+
         // Initialize the game
         function init() {
             showStory(state.currentStory)
@@ -841,8 +904,8 @@ function handleQTEOption(choiceIndex) {
             showStory(state.currentStory);
         }
         
-        // Start the game
-        init();
+        // Start the game with welcome screen
+        document.getElementById('welcome-screen').classList.remove('hidden');
     </script>
 </body>
 </html>
